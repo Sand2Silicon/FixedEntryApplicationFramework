@@ -1,5 +1,5 @@
-#ifndef DYNAMICLIBRARYCLIENT_FOOEXDRIVER_H
-#define DYNAMICLIBRARYCLIENT_FOOEXDRIVER_H
+#ifndef DYNAMICLIBRARYCLIENT_EXDRIVER_H
+#define DYNAMICLIBRARYCLIENT_EXDRIVER_H
 /**
  * Created by Steven Peterson on 2/19/2024.
  * 
@@ -13,10 +13,10 @@ namespace Rubix {
 
     void FOOEXDRIVER_EXPORT helloRubix();
     
-    class FooExDriver {
+    class ExDriver {
 
     };
 
 } // Rubix
 
-#endif //DYNAMICLIBRARYCLIENT_FOOEXDRIVER_H
+#endif //DYNAMICLIBRARYCLIENT_EXDRIVER_H

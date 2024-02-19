@@ -6,12 +6,12 @@
  */
 
 #include <iostream>
-#include "../include/FooExDriver.h"
+#include "ExDriver.h"
 
 namespace Rubix {
 
     void helloRubix() {
-        std::cout << "Hello, Rubix World!" << std::endl;
+        std::cout << "Hello, Foo-Rubix World!" << std::endl;
     }
 
 

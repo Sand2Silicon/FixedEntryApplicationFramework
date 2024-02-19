@@ -24,11 +24,11 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 # -------- Begin Libraries ----------
 
 ## Define Library ##
-set(LIBNAME "FooExDriver")
+set(FOO_LIBNAME "FooExDriver")
 
 # List Library Sources
-set(HEADERS ${LIBNAME}/include/FooExDriver.h)
-set(SOURCES ${LIBNAME}/src/FooExDriver.cpp)
+set(HEADERS ${FOO_LIBNAME}/include/ExDriver.h)
+set(SOURCES ${FOO_LIBNAME}/src/ExDriver.cpp)
 
 add_library(FooExDriver SHARED ${SOURCES} ${HEADERS})
 add_library(Sand2Silicon::FooExDriver ALIAS FooExDriver)
@@ -37,7 +37,7 @@ target_include_directories(FooExDriver
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>  # For generated 'mytools_export.h'
 #        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>  # Make headers available to consuming projects that include via 'add_subdirectory'
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${FOO_LIBNAME}/include>
 #    INTERFACE
 #        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>    # Not needed if in INSTALL section.
 )
@@ -94,7 +94,7 @@ install(TARGETS FooExDriver
                 NAMELINK_COMPONENT  FooExDriver_Development
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}     # (ALL) Static libraries.  (WIN) 'import library' (.lib) for shared libaries.
                 COMPONENT           FooExDriver_Development
-        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${LIBNAME}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${FOO_LIBNAME}
 #        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
@@ -102,7 +102,7 @@ install(TARGETS FooExDriver
 # This is required to be done like so.
 install(
         DIRECTORY ./FooExDriver/include/
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${LIBNAME}"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${FOO_LIBNAME}"
         FILES_MATCHING PATTERN "*.h"
         PATTERN "doc" EXCLUDE
         # TODO: Exclude 'doc/' subdir that is a part of the source directory 'deepCmakeLibrary/'
@@ -137,3 +137,8 @@ target_link_libraries(FooDemo FooExDriver)
 
 install(TARGETS FooDemo)
 install(IMPORTED_RUNTIME_ARTIFACTS FooExDriver)       # (This copies dependent .dll's at INSTALL time) # TODO: Prevent duplicate copy!
+
+# -------------------------------------
+
+
+include(BarLib.cmake)
