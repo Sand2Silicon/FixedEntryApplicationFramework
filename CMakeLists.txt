@@ -37,7 +37,7 @@ target_include_directories(FooExDriver
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>  # For generated 'mytools_export.h'
 #        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>  # Make headers available to consuming projects that include via 'add_subdirectory'
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}/include>      # TODO: Future Improvement - For what purpose?
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${LIBNAME}/include>
 #    INTERFACE
 #        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>    # Not needed if in INSTALL section.
 )
@@ -94,15 +94,15 @@ install(TARGETS FooExDriver
                 NAMELINK_COMPONENT  FooExDriver_Development
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}     # (ALL) Static libraries.  (WIN) 'import library' (.lib) for shared libaries.
                 COMPONENT           FooExDriver_Development
-        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${LIBNAME}
 #        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 # Copy the include/ directories
 # This is required to be done like so.
 install(
-        DIRECTORY ./FooExDriver/include
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+        DIRECTORY ./FooExDriver/include/
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${LIBNAME}"
         FILES_MATCHING PATTERN "*.h"
         PATTERN "doc" EXCLUDE
         # TODO: Exclude 'doc/' subdir that is a part of the source directory 'deepCmakeLibrary/'
@@ -134,3 +134,6 @@ install (EXPORT FooExDriverPackage
 
 add_executable(FooDemo src/main.cpp)
 target_link_libraries(FooDemo FooExDriver)
+
+install(TARGETS FooDemo)
+install(IMPORTED_RUNTIME_ARTIFACTS FooExDriver)       # (This copies dependent .dll's at INSTALL time) # TODO: Prevent duplicate copy!
