@@ -2,7 +2,7 @@
 set(BAR_LIBNAME "BarExDriver")
 
 # List Library Sources
-set(HEADERS ${BAR_LIBNAME}/include/ExDriver.h)
+set(HEADERS ${BAR_LIBNAME}/include/ExDriver.h include/CLI11.hpp)
 set(SOURCES ${BAR_LIBNAME}/src/ExDriver.cpp)
 
 add_library(BarExDriver SHARED ${SOURCES} ${HEADERS})
@@ -109,6 +109,7 @@ install (EXPORT BarExDriverPackage
 
 add_executable(BarDemo src/main.cpp)
 target_link_libraries(BarDemo BarExDriver)
+target_include_directories(BarDemo PRIVATE include)
 
 install(TARGETS BarDemo)
 install(IMPORTED_RUNTIME_ARTIFACTS BarExDriver)       # (This copies dependent .dll's at INSTALL time) # TODO: Prevent duplicate copy!

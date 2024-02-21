@@ -27,7 +27,9 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 set(FOO_LIBNAME "FooExDriver")
 
 # List Library Sources
-set(HEADERS ${FOO_LIBNAME}/include/ExDriver.h)
+set(HEADERS
+        ${FOO_LIBNAME}/include/ExDriver.h
+        include/CLI11.hpp)
 set(SOURCES ${FOO_LIBNAME}/src/ExDriver.cpp)
 
 add_library(FooExDriver SHARED ${SOURCES} ${HEADERS})
@@ -113,7 +115,7 @@ install(
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
 
-# Install the Documentation     # todo WHY doesn't THIS work???...
+# Install the Documentation
 #install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/
 #        DESTINATION ${CMAKE_INSTALL_DOCDIR}
 #        FILES_MATCHING
@@ -134,6 +136,7 @@ install (EXPORT FooExDriverPackage
 
 add_executable(FooDemo src/main.cpp)
 target_link_libraries(FooDemo FooExDriver)
+target_include_directories(FooDemo PRIVATE include)
 
 install(TARGETS FooDemo)
 install(IMPORTED_RUNTIME_ARTIFACTS FooExDriver)       # (This copies dependent .dll's at INSTALL time) # TODO: Prevent duplicate copy!
