@@ -21,19 +21,37 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
 
+# -------- Begin Dependencies ----------
+
+# Set the CMAKE_PREFIX_PATH to include the FTXUI library
+set(CMAKE_PREFIX_PATH "C:\\opt\\lib\\FTXUI;${CMAKE_PREFIX_PATH}")
+
+# Use find_package to locate the FTXUI library
+find_package(FTXUI REQUIRED)
+
+
 # -------- Begin Libraries ----------
 
 ## Define Library ##
 set(FOO_LIBNAME "FooExDriver")
-
 # List Library Sources
 set(HEADERS
         ${FOO_LIBNAME}/include/ExDriver.h
-        include/CLI11.hpp)
+        ${FOO_LIBNAME}/include/ExProgramArgs.h
+        include/CLI11.hpp
+)
+
 set(SOURCES ${FOO_LIBNAME}/src/ExDriver.cpp)
 
 add_library(FooExDriver SHARED ${SOURCES} ${HEADERS})
 add_library(Sand2Silicon::FooExDriver ALIAS FooExDriver)
+
+# Link the FTXUI library to your target
+target_link_libraries(FooExDriver
+        PRIVATE ftxui::screen
+        PRIVATE ftxui::dom
+        PRIVATE ftxui::component # Not needed for this example.
+)
 
 target_include_directories(FooExDriver
     PUBLIC
@@ -135,8 +153,15 @@ install (EXPORT FooExDriverPackage
 # -------- Begin Executables ----------
 
 add_executable(FooDemo src/main.cpp)
-target_link_libraries(FooDemo FooExDriver)
+target_link_libraries(FooDemo PRIVATE FooExDriver)
 target_include_directories(FooDemo PRIVATE include)
+
+# Link the FTXUI library to your target
+target_link_libraries(FooDemo
+        PRIVATE ftxui::screen
+        PRIVATE ftxui::dom
+        PRIVATE ftxui::component # Not needed for this example.
+)
 
 install(TARGETS FooDemo)
 install(IMPORTED_RUNTIME_ARTIFACTS FooExDriver)       # (This copies dependent .dll's at INSTALL time) # TODO: Prevent duplicate copy!
