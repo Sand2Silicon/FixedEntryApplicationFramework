@@ -10,40 +10,62 @@
 
 #include "..\include\CLI11.hpp"
 #include <string>
+#include <ftxui/component/component.hpp>
+#include <ftxui/dom/elements.hpp>
+#include <ftxui/screen/screen.hpp>
+#include "fooexdriver_export.h"
 
-//struct Options
-//{
-//    std::string files {};
-//    bool        useGPU{false};
-//    int         maxIterations{3};
-//    float       variance{0.2f};
-//};
+struct ArgumentBase {
+    ArgumentBase(const std::string& name, const std::string& description) :
+            name(name), description(description) {}
+
+    std::string name;
+    std::string description;
+    virtual ~ArgumentBase() = default;
+    virtual void AddToCLI(CLI::App& app) = 0;
+    virtual ftxui::Component GenerateComponent() const = 0;
+};
+
+template <typename T>
+struct TypedArgument : ArgumentBase {
+    T value;
+    T defaultValue;
+    std::function<void()> on_change;
+
+    TypedArgument(std::string name, T defaultValue, std::string description)
+            : ArgumentBase(std::move(name), std::move(description)),
+              value(defaultValue),
+              defaultValue(defaultValue) {}
+
+    void AddToCLI(CLI::App& app) override {
+        app.add_option("--" + name, value, description)->default_val(defaultValue);
+    }
+
+    ftxui::Component GenerateComponent() const override;
+};
+
+using ArgumentList = std::vector<std::shared_ptr<ArgumentBase>>;
 
 struct ExProgramArgs {
-public:
-//    std::string files{};
-//    bool useGPU{};
-//    int maxIterations{};
-//    float variance{};
-//    bool interactive{};
-
-    std::string files = "";
-    bool useGPU = false;
-    int maxIterations = 1000;
-    float variance = 0.01f;
-    bool interactive = false;  // Make sure to initialize the new flag.
-
-    // todo find a home for these
-    std::string maxIterationsStr;
-    std::string varianceStr;
-
+    ArgumentList arguments;
 
     void setupCLI(CLI::App& app) {
-        app.add_option("--files", files, "File paths to process")->required();
-        app.add_flag("--useGPU", useGPU, "Use GPU for processing if available");
-        app.add_option("--maxIterations", maxIterations, "Maximum number of iterations")->default_val(1000);
-        app.add_option("--variance", variance)->default_val(0.02f);
-        app.add_flag("--interactive", interactive, "Use config screen");
+        for (auto& arg : arguments) {
+            arg->AddToCLI(app);
+        }
     }
+
+    ftxui::Component FOOEXDRIVER_EXPORT GenerateConfigScreen(ftxui::ScreenInteractive* screen) const;
 };
+
+template <>
+ftxui::Component TypedArgument<std::string>::GenerateComponent() const {
+    return ftxui::Input(&const_cast<std::string&>(value), defaultValue);
+}
+
+template <>
+ftxui::Component TypedArgument<bool>::GenerateComponent() const {
+    return ftxui::Checkbox(description, &const_cast<bool&>(value));
+}
+
 #endif //DYNAMICLIBRARYCLIENT_EXPROGRAMARGS_H

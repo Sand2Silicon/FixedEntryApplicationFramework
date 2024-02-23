@@ -41,7 +41,9 @@ set(HEADERS
         include/CLI11.hpp
 )
 
-set(SOURCES ${FOO_LIBNAME}/src/ExDriver.cpp)
+set(SOURCES
+        ${FOO_LIBNAME}/src/ExDriver.cpp
+        ${FOO_LIBNAME}/src/ExProgramArgs.cpp)
 
 add_library(FooExDriver SHARED ${SOURCES} ${HEADERS})
 add_library(Sand2Silicon::FooExDriver ALIAS FooExDriver)

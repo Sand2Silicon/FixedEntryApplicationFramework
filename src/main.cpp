@@ -12,64 +12,10 @@
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
 #include <ftxui/component/screen_interactive.hpp>
+#include <memory>
 
 using namespace ftxui;
 
-
-Component GenerateConfigScreen(ExProgramArgs& args, ftxui::ScreenInteractive* screen) {
-    // Create input fields for the parameters
-    auto files_input = Input(&args.files, "path/to/file");
-    auto use_gpu_checkbox = Checkbox("Use GPU", &args.useGPU);
-
-    // Convert maxIterations to string for the Input component
-    args.maxIterationsStr = std::to_string(args.maxIterations);
-    auto max_iterations_input = Input(&args.maxIterationsStr, "");
-
-    // Convert variance to string for the Input component
-    args.varianceStr = std::to_string(args.variance);
-    auto variance_input = Input(&args.varianceStr, "");
-
-
-    // Create a 'Done' button
-    auto done_button = Button("Done", [&] {
-        // Convert the string input back to the appropriate data types
-        std::stringstream ss;
-
-        ss.str(args.maxIterationsStr);
-        ss >> args.maxIterations;
-        ss.clear(); // Clear state flags
-
-        ss.str(args.varianceStr);
-        ss >> args.variance;
-
-        // Add any additional logic you need to handle the 'Done' action
-        screen->ExitLoopClosure()();
-    });
-
-    // Create a container to hold all components
-    auto container = Container::Vertical({
-        Container::Horizontal({
-            Renderer([] { return text("Files: "); }),
-            files_input
-        }) |border ,
-        Container::Horizontal({
-            Renderer([] { return text("Use GPU: "); }),
-            use_gpu_checkbox
-        }) |border,
-        Container::Horizontal({
-            Renderer([] { return text("Max Iterations: "); }),
-            max_iterations_input
-        }) |border,
-        Container::Horizontal({
-            Renderer([] { return text("Variance: "); }),
-            variance_input
-        }) |border,
-        done_button,
-    });
-
-    // Return the container as a Component
-    return container;
-}
 
 int main(int argc, char** argv) {
     // -- CLI --
@@ -78,6 +24,13 @@ int main(int argc, char** argv) {
 
     // Setup CLI parameters
     ExProgramArgs args;
+
+    // Add arguments to args.arguments here, for example:
+    args.arguments.push_back(std::make_shared<TypedArgument<bool>>("interactive", false, "Use interactive config screen."));
+    args.arguments.push_back(std::make_shared<TypedArgument<std::string>>("files", "", "File paths to process"));
+    args.arguments.push_back(std::make_shared<TypedArgument<bool>>("useGPU", false, "Use GPU for processing if available"));
+    // ... Add other arguments ...
+
     args.setupCLI(app);
 
     // Parse command line arguments
@@ -86,21 +39,9 @@ int main(int argc, char** argv) {
     // Check if --interactive flag is passed and display the configuration screen.
     if (app["--interactive"]->as<bool>()) {
         auto screen = ftxui::ScreenInteractive::TerminalOutput();
-        ftxui::Component config_screen = GenerateConfigScreen(args, &screen);
+        ftxui::Component config_screen = args.GenerateConfigScreen( &screen);
         screen.Loop(config_screen);
     }
-
-//    for(const auto& opt : app.get_options()) {
-//        std::cout << "Option: " << opt->get_name() << ", type: " << opt->get_type_name() << ", description: " << opt->get_description() << std::endl;
-//    }
-
-//    for(const auto& opt2 : app.get_options()) {
-//        std::cout << "Option: " << opt2->get_name()
-//                  << ", description: " << opt2->get_description()
-//                  << ", type: " << option_types[opt2->get_name()] << std::endl;
-//    }
-
-    // -- end CLI --
 
     Rubix::helloRubix();
     return 0;
