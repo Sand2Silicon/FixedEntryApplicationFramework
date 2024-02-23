@@ -5,8 +5,9 @@
  * Summary Description:
  */
 
-#include "ExProgramArgs.h"
+#include "../UILibrary/include/ExProgramArgs.h"
 #include "ExDriver.h"
+#include "CLIManager.h"
 #include "CLI11.hpp"
 #include <ftxui/component/component.hpp> // for the FTXUI library
 #include <ftxui/dom/elements.hpp>
@@ -31,10 +32,12 @@ int main(int argc, char** argv) {
     args.arguments.push_back(std::make_shared<TypedArgument<bool>>("useGPU", false, "Use GPU for processing if available"));
     // ... Add other arguments ...
 
-    args.setupCLI(app);
+    CLIManager cli_manager(app, args);
+    cli_manager.SetupCLI();
+    cli_manager.ParseCLI(argc, argv);
 
     // Parse command line arguments
-    CLI11_PARSE(app, argc, argv);
+//    CLI11_PARSE(app, argc, argv);
 
     // Check if --interactive flag is passed and display the configuration screen.
     if (app["--interactive"]->as<bool>()) {

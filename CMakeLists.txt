@@ -29,7 +29,8 @@ set(CMAKE_PREFIX_PATH "C:\\opt\\lib\\FTXUI;${CMAKE_PREFIX_PATH}")
 # Use find_package to locate the FTXUI library
 find_package(FTXUI REQUIRED)
 
-
+# Include the UI library CMake configuration
+include(UILibrary.cmake)
 # -------- Begin Libraries ----------
 
 ## Define Library ##
@@ -37,13 +38,16 @@ set(FOO_LIBNAME "FooExDriver")
 # List Library Sources
 set(HEADERS
         ${FOO_LIBNAME}/include/ExDriver.h
-        ${FOO_LIBNAME}/include/ExProgramArgs.h
+#        ${FOO_LIBNAME}/include/ExProgramArgs.h
+        ${FOO_LIBNAME}/include/CLIManager.h
         include/CLI11.hpp
 )
 
 set(SOURCES
         ${FOO_LIBNAME}/src/ExDriver.cpp
-        ${FOO_LIBNAME}/src/ExProgramArgs.cpp)
+        #${FOO_LIBNAME}/src/ExProgramArgs.cpp
+        ${FOO_LIBNAME}/src/CLIManager.cpp
+)
 
 add_library(FooExDriver SHARED ${SOURCES} ${HEADERS})
 add_library(Sand2Silicon::FooExDriver ALIAS FooExDriver)
@@ -155,7 +159,10 @@ install (EXPORT FooExDriverPackage
 # -------- Begin Executables ----------
 
 add_executable(FooDemo src/main.cpp)
-target_link_libraries(FooDemo PRIVATE FooExDriver)
+target_link_libraries(FooDemo
+        PRIVATE FooExDriver
+        UILibrary
+)
 target_include_directories(FooDemo PRIVATE include)
 
 # Link the FTXUI library to your target

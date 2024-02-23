@@ -5,7 +5,7 @@
  * Summary Description:
  */
 
-#include "ExProgramArgs.h"
+#include "../include/ExProgramArgs.h"
 #include <ftxui/component/component.hpp> // for Component
 #include <ftxui/dom/elements.hpp>        // for text
 #include <ftxui/component/screen_interactive.hpp>
@@ -28,3 +28,23 @@ ftxui::Component ExProgramArgs::GenerateConfigScreen(ftxui::ScreenInteractive* s
 
     return container;
 }
+
+template <>
+ftxui::Component TypedArgument<std::string>::GenerateComponent() {
+    return ftxui::Input(&(value), defaultValue);
+}
+
+template <>
+ftxui::Component TypedArgument<bool>::GenerateComponent() {
+    return ftxui::Checkbox(description, &(value));
+}
+
+//template <>
+//ftxui::Component TypedArgument<std::string>::GenerateComponent() const {
+//    return ftxui::Input(&const_cast<std::string&>(value), defaultValue);
+//}
+//
+//template <>
+//ftxui::Component TypedArgument<bool>::GenerateComponent() const {
+//    return ftxui::Checkbox(description, &const_cast<bool&>(value));
+//}

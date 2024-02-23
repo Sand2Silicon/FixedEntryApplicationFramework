@@ -8,12 +8,18 @@
 #ifndef DYNAMICLIBRARYCLIENT_EXPROGRAMARGS_H
 #define DYNAMICLIBRARYCLIENT_EXPROGRAMARGS_H
 
-#include "..\include\CLI11.hpp"
+#include "../../include/CLI11.hpp"
 #include <string>
 #include <ftxui/component/component.hpp>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
-#include "fooexdriver_export.h"
+// #include "fooexdriver_export.h"
+#include "uilibrary_export.h"
+
+#include <variant>
+
+// Variant to hold different types of argument values.
+using ArgumentVariant = std::variant<bool, int, float, std::string>;
 
 struct ArgumentBase {
     ArgumentBase(const std::string& name, const std::string& description) :
@@ -23,7 +29,9 @@ struct ArgumentBase {
     std::string description;
     virtual ~ArgumentBase() = default;
     virtual void AddToCLI(CLI::App& app) = 0;
-    virtual ftxui::Component GenerateComponent() const = 0;
+    virtual ftxui::Component GenerateComponent() = 0;
+
+    virtual ArgumentVariant GetValue() const = 0;
 };
 
 template <typename T>
@@ -41,7 +49,12 @@ struct TypedArgument : ArgumentBase {
         app.add_option("--" + name, value, description)->default_val(defaultValue);
     }
 
-    ftxui::Component GenerateComponent() const override;
+    ftxui::Component GenerateComponent() override;
+
+    ArgumentVariant GetValue() const override {
+        return value;
+    }
+
 };
 
 using ArgumentList = std::vector<std::shared_ptr<ArgumentBase>>;
@@ -55,17 +68,16 @@ struct ExProgramArgs {
         }
     }
 
-    ftxui::Component FOOEXDRIVER_EXPORT GenerateConfigScreen(ftxui::ScreenInteractive* screen) const;
+    ftxui::Component UILIBRARY_EXPORT GenerateConfigScreen(ftxui::ScreenInteractive* screen) const;
 };
 
+// Declare the explicit specializations
 template <>
-ftxui::Component TypedArgument<std::string>::GenerateComponent() const {
-    return ftxui::Input(&const_cast<std::string&>(value), defaultValue);
-}
+ftxui::Component UILIBRARY_EXPORT TypedArgument<std::string>::GenerateComponent();
 
 template <>
-ftxui::Component TypedArgument<bool>::GenerateComponent() const {
-    return ftxui::Checkbox(description, &const_cast<bool&>(value));
-}
+ftxui::Component UILIBRARY_EXPORT TypedArgument<bool>::GenerateComponent();
+
+
 
 #endif //DYNAMICLIBRARYCLIENT_EXPROGRAMARGS_H
