@@ -8,8 +8,8 @@
  * Summary Description:
  */
 
-#include "..\include\CLI11.hpp"
-#include "../../UILibrary/include/ExProgramArgs.h"
+#include "CLI11.hpp"
+#include "ExProgramArgs.h"
 
 class CLIManager {
 public:

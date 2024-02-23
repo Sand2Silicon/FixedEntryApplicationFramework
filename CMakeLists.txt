@@ -39,14 +39,13 @@ set(FOO_LIBNAME "FooExDriver")
 set(HEADERS
         ${FOO_LIBNAME}/include/ExDriver.h
 #        ${FOO_LIBNAME}/include/ExProgramArgs.h
-        ${FOO_LIBNAME}/include/CLIManager.h
+
         include/CLI11.hpp
 )
 
 set(SOURCES
         ${FOO_LIBNAME}/src/ExDriver.cpp
         #${FOO_LIBNAME}/src/ExProgramArgs.cpp
-        ${FOO_LIBNAME}/src/CLIManager.cpp
 )
 
 add_library(FooExDriver SHARED ${SOURCES} ${HEADERS})
@@ -54,6 +53,7 @@ add_library(Sand2Silicon::FooExDriver ALIAS FooExDriver)
 
 # Link the FTXUI library to your target
 target_link_libraries(FooExDriver
+        PRIVATE UILibrary
         PRIVATE ftxui::screen
         PRIVATE ftxui::dom
         PRIVATE ftxui::component # Not needed for this example.
@@ -161,7 +161,7 @@ install (EXPORT FooExDriverPackage
 add_executable(FooDemo src/main.cpp)
 target_link_libraries(FooDemo
         PRIVATE FooExDriver
-        UILibrary
+        PRIVATE UILibrary
 )
 target_include_directories(FooDemo PRIVATE include)
 

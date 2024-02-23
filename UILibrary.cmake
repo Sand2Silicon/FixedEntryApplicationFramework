@@ -19,6 +19,7 @@ set(UI_LIBRARY_SOURCES
 # Define the header files for the UI library
 set(UI_LIBRARY_HEADERS
         UILibrary/include/ExProgramArgs.h
+        UILibrary/include/CLIManager.h
         # Add other header files related to the UI library here
 )
 
@@ -33,7 +34,7 @@ target_include_directories(UILibrary
         PUBLIC
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>  # For generated 'mytools_export.h'
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/UILibrary/include>
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
