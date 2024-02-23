@@ -16,7 +16,7 @@
 using namespace ftxui;
 
 
-Component GenerateConfigScreen(ExProgramArgs& args) {
+Component GenerateConfigScreen(ExProgramArgs& args, ftxui::ScreenInteractive* screen) {
     // Create input fields for the parameters
     auto files_input = Input(&args.files, "path/to/file");
     auto use_gpu_checkbox = Checkbox("Use GPU", &args.useGPU);
@@ -41,35 +41,31 @@ Component GenerateConfigScreen(ExProgramArgs& args) {
 
         ss.str(args.varianceStr);
         ss >> args.variance;
+
         // Add any additional logic you need to handle the 'Done' action
+        screen->ExitLoopClosure()();
     });
 
-    // Create a container to hold all components
     // Create a container to hold all components
     auto container = Container::Vertical({
         Container::Horizontal({
             Renderer([] { return text("Files: "); }),
             files_input
-        }),
+        }) |border ,
         Container::Horizontal({
             Renderer([] { return text("Use GPU: "); }),
             use_gpu_checkbox
-        }),
+        }) |border,
         Container::Horizontal({
             Renderer([] { return text("Max Iterations: "); }),
             max_iterations_input
-        }),
+        }) |border,
         Container::Horizontal({
             Renderer([] { return text("Variance: "); }),
             variance_input
-        }),
+        }) |border,
         done_button,
     });
-
-    // Add additional styling if desired
-//    files_input->SetBorder(true);
-//    max_iterations_input->SetBorder(true);
-//    variance_input->SetBorder(true);
 
     // Return the container as a Component
     return container;
@@ -90,7 +86,7 @@ int main(int argc, char** argv) {
     // Check if --interactive flag is passed and display the configuration screen.
     if (app["--interactive"]->as<bool>()) {
         auto screen = ftxui::ScreenInteractive::TerminalOutput();
-        ftxui::Component config_screen = GenerateConfigScreen(args);
+        ftxui::Component config_screen = GenerateConfigScreen(args, &screen);
         screen.Loop(config_screen);
     }
 
