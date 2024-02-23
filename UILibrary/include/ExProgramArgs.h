@@ -10,10 +10,12 @@
 
 #include "../../include/CLI11.hpp"
 #include <string>
+#include <stdexcept>    // for std::invlaid_argument
+#include <sstream>      // for std::stringstream
+
 #include <ftxui/component/component.hpp>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
-// #include "fooexdriver_export.h"
 #include "uilibrary_export.h"
 
 #include <variant>
@@ -51,8 +53,21 @@ struct TypedArgument : ArgumentBase {
 
     ftxui::Component GenerateComponent() override;
 
-    ArgumentVariant GetValue() const override {
+    [[nodiscard]] ArgumentVariant GetValue() const override {
         return value;
+    }
+
+    /**
+     * @brief Function to handle value changes, converting strings to the correct type
+     * @param input
+     */
+    void SetValueFromString(const std::string& input) {
+        std::stringstream ss(input);
+        T newValue;
+        if (*!(ss >> newValue)) {
+            throw std::invalid_argument("Invalid input for argument: " + name);
+        }
+        value = newValue;
     }
 
 };

@@ -32,20 +32,35 @@ int main(int argc, char** argv) {
     args.arguments.push_back(std::make_shared<TypedArgument<bool>>("useGPU", false, "Use GPU for processing if available"));
     // ... Add other arguments ...
 
-    CLIManager cli_manager(app, args);
-    cli_manager.SetupCLI();
-    cli_manager.ParseCLI(argc, argv);
+    try {
+        CLIManager cli_manager(app, args);
+        cli_manager.SetupCLI();
+        cli_manager.ParseCLI(argc, argv);
 
-    // Parse command line arguments
-//    CLI11_PARSE(app, argc, argv);
+        // Check if --interactive flag is passed and display the configuration screen.
+        if (app["--interactive"]->as<bool>()) {
+            auto screen = ftxui::ScreenInteractive::TerminalOutput();
+            ftxui::Component config_screen = args.GenerateConfigScreen(&screen);
+            screen.Loop(config_screen);
+        }
 
-    // Check if --interactive flag is passed and display the configuration screen.
-    if (app["--interactive"]->as<bool>()) {
-        auto screen = ftxui::ScreenInteractive::TerminalOutput();
-        ftxui::Component config_screen = args.GenerateConfigScreen( &screen);
-        screen.Loop(config_screen);
+        // Do the program's real work!
+        // Call library function with error handling.
+        try {
+            Rubix::helloRubix();
+        } catch (const std::exception& e)
+        {
+            std::cerr << "Error calling hellRubix(): " << e.what() <<std::endl;
+            return EXIT_FAILURE;
+        }
+
+    } catch (const CLI::ParseError& e) {
+        return app.exit(e);     // CLI11 provides app.exit() to handle exceptions nicely
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " <<e.what() << std::endl;
+        return EXIT_FAILURE;
     }
 
-    Rubix::helloRubix();
-    return 0;
+    system("pause");
+    return EXIT_SUCCESS;
 }
