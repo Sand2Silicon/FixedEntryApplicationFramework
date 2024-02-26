@@ -36,6 +36,22 @@ include(UILibrary.cmake)
 # -------- Begin Libraries ----------
 include(create_adapta_library.cmake)
 
+
+
+#
+#include(create_shared_library.cmake)
+#
+### Define Library ##
+set(FOO_LIBNAME "FooExDriver")
+
+# Declare Libraries
+add_library(FooExDriver SHARED
+    ${FOO_LIBNAME}/include/ExDriver.h
+    ${FOO_LIBNAME}/src/ExDriver.cpp
+)
+add_library(Sand2Silicon::FooExDriver ALIAS FooExDriver)
+
+target_link_driver_libraries(FooExDriver)
 configure_library(
         FooExDriver
         ${DynamicLibraryClient_VERSION_MAJOR}
@@ -44,36 +60,24 @@ configure_library(
         ${DynamicLibraryClient_VERSION_TWEAK}
 )
 
-#
-#include(create_shared_library.cmake)
-#
-### Define Library ##
-#set(FOO_LIBNAME "FooExDriver")
-##set(HEADERSS
-##        ${FOO_LIBNAME}/include/ExDriver.h
-###        ${FOO_LIBNAME}/include/ExProgramArgs.h
-##
-##        include/CLI11.hpp
-##)
-##
-##set(SOURCESS
-##        ${FOO_LIBNAME}/src/ExDriver.cpp
-##        #${FOO_LIBNAME}/src/ExProgramArgs.cpp
-##)
-#
-#
-## Declare Libraries
-#add_library(FooExDriver SHARED
-#    ${FOO_LIBNAME}/include/ExDriver.h ${HEADERS}
-#    ${FOO_LIBNAME}/src/ExDriver.cpp
-#)
-#add_library(Sand2Silicon::FooExDriver ALIAS FooExDriver)
-#target_link_libraries(FooExDriver
-#    PRIVATE UILibrary
-#    PRIVATE ftxui::screen
-#    PRIVATE ftxui::dom
-#    PRIVATE ftxui::component # Not needed for this example.
-#)
+set(BAR_LIBNAME "BarExDriver")
+
+# Declare Libraries
+add_library(BarExDriver SHARED
+        ${BAR_LIBNAME}/include/ExDriver.h
+        ${BAR_LIBNAME}/src/ExDriver.cpp
+)
+add_library(Sand2Silicon::BarExDriver ALIAS BarExDriver)
+
+target_link_driver_libraries(BarExDriver)
+configure_library(
+        BarExDriver
+        ${DynamicLibraryClient_VERSION_MAJOR}
+        ${DynamicLibraryClient_VERSION_MINOR}
+        ${DynamicLibraryClient_VERSION_PATCH}
+        ${DynamicLibraryClient_VERSION_TWEAK}
+)
+
 #
 ##create_shared_library(${FOO_LIBNAME} ${HEADERSS} ${SOURCESS})
 #create_shared_library(FooExDriver "FooExDriver")
@@ -196,7 +200,27 @@ target_link_libraries(FooDemo
 install(TARGETS FooDemo)
 install(IMPORTED_RUNTIME_ARTIFACTS FooExDriver)       # (This copies dependent .dll's at INSTALL time) # TODO: Prevent duplicate copy!
 
+
+add_executable(BarDemo src/main.cpp)
+target_link_libraries(BarDemo
+        PRIVATE BarExDriver
+        PRIVATE UILibrary
+)
+target_include_directories(BarDemo PRIVATE include)
+
+# Link the FTXUI library to your target
+target_link_libraries(BarDemo
+        PRIVATE ftxui::screen
+        PRIVATE ftxui::dom
+        PRIVATE ftxui::component # Not needed for this example.
+)
+
+install(TARGETS BarDemo)
+install(IMPORTED_RUNTIME_ARTIFACTS BarExDriver)       # (This copies dependent .dll's at INSTALL time) # TODO: Prevent duplicate copy!
+
+
+
 # -------------------------------------
 
 
-include(BarLib.cmake)
+# include(BarLib.cmake)

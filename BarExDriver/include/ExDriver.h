@@ -8,9 +8,11 @@
  */
 
 #include "Barexdriver_export.h"
+struct ExProgramArgs;   // forward declaration
 
 namespace Rubix {
 
+    void BAREXDRIVER_EXPORT setupProgramArgs(ExProgramArgs& args);
     void BAREXDRIVER_EXPORT helloRubix();
     
     class ExDriver {
