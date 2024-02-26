@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(DynamicLibraryClient LANGUAGES CXX VERSION 1.0.0)
+project(DynamicLibraryClient LANGUAGES CXX VERSION 1.0.1.2)
 set(CMAKE_CXX_STANDARD 20)
 
 if (LINUX)
@@ -31,129 +31,150 @@ find_package(FTXUI REQUIRED)
 
 # Include the UI library CMake configuration
 include(UILibrary.cmake)
+
+
 # -------- Begin Libraries ----------
+include(create_adapta_library.cmake)
 
-## Define Library ##
-set(FOO_LIBNAME "FooExDriver")
-# List Library Sources
-set(HEADERS
-        ${FOO_LIBNAME}/include/ExDriver.h
-#        ${FOO_LIBNAME}/include/ExProgramArgs.h
-
-        include/CLI11.hpp
+configure_library(
+        FooExDriver
+        ${DynamicLibraryClient_VERSION_MAJOR}
+        ${DynamicLibraryClient_VERSION_MINOR}
+        ${DynamicLibraryClient_VERSION_PATCH}
+        ${DynamicLibraryClient_VERSION_TWEAK}
 )
 
-set(SOURCES
-        ${FOO_LIBNAME}/src/ExDriver.cpp
-        #${FOO_LIBNAME}/src/ExProgramArgs.cpp
-)
-
-add_library(FooExDriver SHARED ${SOURCES} ${HEADERS})
-add_library(Sand2Silicon::FooExDriver ALIAS FooExDriver)
-
-# Link the FTXUI library to your target
-target_link_libraries(FooExDriver
-        PRIVATE UILibrary
-        PRIVATE ftxui::screen
-        PRIVATE ftxui::dom
-        PRIVATE ftxui::component # Not needed for this example.
-)
-
-target_include_directories(FooExDriver
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>  # For generated 'mytools_export.h'
-#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>  # Make headers available to consuming projects that include via 'add_subdirectory'
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${FOO_LIBNAME}/include>
-#    INTERFACE
-#        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>    # Not needed if in INSTALL section.
-)
-
-
-## Version Number Management ##
-
-set(FOOEXDRIVER_LIB_MAJOR_VERSION ${DynamicLibraryClient_VERSION_MAJOR})
-set(FOOEXDRIVER_LIB_MINOR_VERSION ${DynamicLibraryClient_VERSION_MINOR})
-set(FOOEXDRIVER_LIB_PATCH_VERSION ${DynamicLibraryClient_VERSION_MPATCH})
-set(FOOEXDRIVER_LIB_FULL_VERSION  ${FOOEXDRIVER_LIB_MAJOR_VERSION}.${FOOEXDRIVER_LIB_MINOR_VERSION}.${FOOEXDRIVER_LIB_PATCH_VERSION})
-
-set_target_properties(FooExDriver PROPERTIES
-        VERSION   ${FOOEXDRIVER_LIB_FULL_VERSION}
-        SOVERSION ${FOOEXDRIVER_LIB_MAJOR_VERSION}
-)
-
-# Embed version-info in the .dll
-# TODO:
-#target_source(FooExDriver PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
-
-#configure_file(
-#        ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
-#        ${CMAKE_CURRENT_BINARY_DIR}/version.rc
-#        @ONLY
+#
+#include(create_shared_library.cmake)
+#
+### Define Library ##
+#set(FOO_LIBNAME "FooExDriver")
+##set(HEADERSS
+##        ${FOO_LIBNAME}/include/ExDriver.h
+###        ${FOO_LIBNAME}/include/ExProgramArgs.h
+##
+##        include/CLI11.hpp
+##)
+##
+##set(SOURCESS
+##        ${FOO_LIBNAME}/src/ExDriver.cpp
+##        #${FOO_LIBNAME}/src/ExProgramArgs.cpp
+##)
+#
+#
+## Declare Libraries
+#add_library(FooExDriver SHARED
+#    ${FOO_LIBNAME}/include/ExDriver.h ${HEADERS}
+#    ${FOO_LIBNAME}/src/ExDriver.cpp
 #)
-
-
-## Shared Library Exports ##
-
-# Generate __declspec(export)/(import) header.
-include(GenerateExportHeader)
-generate_export_header(FooExDriver)
-
-
-## Install Section ##
-
-include(GNUInstallDirs)
-set(CMAKE_INSTALL_DOCDIR "${CMAKE_INSTALL_PREFIX}/doc")
-
-# RPATH FIXES for *inx platforms    (ProCmake pg. 385)`
-file(RELATIVE_PATH relDir
-        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
-        ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
-)
-set(CMAKE_INSTALL_RPATH $ORIGIN $ORIGIN/${relDir})
-
-install(TARGETS FooExDriver
-        EXPORT FooExDriverPackage DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}     # (ALL) Executable binaries.  (WIN) .dll's too.
-                COMPONENT           FooExDriver_RunTime
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}     # (UNIX) Shared Libraries.
-                COMPONENT           FooExDriver_RunTime
-                NAMELINK_COMPONENT  FooExDriver_Development
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}     # (ALL) Static libraries.  (WIN) 'import library' (.lib) for shared libaries.
-                COMPONENT           FooExDriver_Development
-        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${FOO_LIBNAME}
-#        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-# Copy the include/ directories
-# This is required to be done like so.
-install(
-        DIRECTORY ./FooExDriver/include/
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${FOO_LIBNAME}"
-        FILES_MATCHING PATTERN "*.h"
-        PATTERN "doc" EXCLUDE
-        # TODO: Exclude 'doc/' subdir that is a part of the source directory 'deepCmakeLibrary/'
-)
-
-install(
-        FILES "${CMAKE_CURRENT_BINARY_DIR}/fooexdriver_export.h"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-)
-
-# Install the Documentation
-#install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/
-#        DESTINATION ${CMAKE_INSTALL_DOCDIR}
-#        FILES_MATCHING
-#        PATTERN "*.md"
-#        PATTERN "*.DS_Store" EXCLUDE
-#        PATTERN "*.svn" EXCLUDE
+#add_library(Sand2Silicon::FooExDriver ALIAS FooExDriver)
+#target_link_libraries(FooExDriver
+#    PRIVATE UILibrary
+#    PRIVATE ftxui::screen
+#    PRIVATE ftxui::dom
+#    PRIVATE ftxui::component # Not needed for this example.
 #)
-
-
-install (EXPORT FooExDriverPackage
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/FooExDriver
-        NAMESPACE Sand2Silicon::
-        FILE FooExDriverConfig.cmake
-)
+#
+##create_shared_library(${FOO_LIBNAME} ${HEADERSS} ${SOURCESS})
+#create_shared_library(FooExDriver "FooExDriver")
+#
+#target_include_directories(FooExDriver
+#    PUBLIC
+#        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>  # For generated 'mytools_export.h'
+##        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>  # Make headers available to consuming projects that include via 'add_subdirectory'
+#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${FOO_LIBNAME}/include>
+##    INTERFACE
+##        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>    # Not needed if in INSTALL section.
+#)
+#
+#
+##### Version Number Management ##
+#set(FOOEXDRIVER_LIB_MAJOR_VERSION ${DynamicLibraryClient_VERSION_MAJOR})
+#set(FOOEXDRIVER_LIB_MINOR_VERSION ${DynamicLibraryClient_VERSION_MINOR})
+#set(FOOEXDRIVER_LIB_PATCH_VERSION ${DynamicLibraryClient_VERSION_PATCH})
+#set(FOOEXDRIVER_LIB_TWEAK_VERSION ${DynamicLibraryClient_VERSION_TWEAK})
+#set(FOOEXDRIVER_LIB_FULL_VERSION  ${FOOEXDRIVER_LIB_MAJOR_VERSION}.${FOOEXDRIVER_LIB_MINOR_VERSION}.${FOOEXDRIVER_LIB_PATCH_VERSION}.${FOOEXDRIVER_LIB_TWEAK_VERSION})
+#
+#set_target_properties(FooExDriver PROPERTIES
+#    VERSION   ${FOOEXDRIVER_LIB_FULL_VERSION}
+#    SOVERSION ${FOOEXDRIVER_LIB_MAJOR_VERSION}
+#)
+#
+#message("FOOEXDRIVER_LIB_FULL_VERSION: ${FOOEXDRIVER_LIB_FULL_VERSION}")
+#
+## Embed version-info in the .dll
+## TODO:
+##target_source(FooExDriver PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+#
+##configure_file(
+##        ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
+##        ${CMAKE_CURRENT_BINARY_DIR}/version.rc
+##        @ONLY
+##)
+#
+#
+### Shared Library Exports ##
+#
+## Generate __declspec(export)/(import) header.
+#include(GenerateExportHeader)
+#generate_export_header(FooExDriver)
+#
+#
+### Install Section ##
+#
+#include(GNUInstallDirs)
+#set(CMAKE_INSTALL_DOCDIR "${CMAKE_INSTALL_PREFIX}/doc")
+#
+## RPATH FIXES for *inx platforms    (ProCmake pg. 385)`
+#file(RELATIVE_PATH relDir
+#    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
+#    ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
+#)
+#set(CMAKE_INSTALL_RPATH $ORIGIN $ORIGIN/${relDir})
+#
+#install(TARGETS FooExDriver
+#    EXPORT FooExDriverPackage DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}     # (ALL) Executable binaries.  (WIN) .dll's too.
+#            COMPONENT           FooExDriver_RunTime
+#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}     # (UNIX) Shared Libraries.
+#            COMPONENT           FooExDriver_RunTime
+#            NAMELINK_COMPONENT  FooExDriver_Development
+#    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}     # (ALL) Static libraries.  (WIN) 'import library' (.lib) for shared libaries.
+#            COMPONENT           FooExDriver_Development
+#    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${FOO_LIBNAME}
+##        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+#)
+#
+## Copy the include/ directories
+## This is required to be done like so.
+#install(
+#    DIRECTORY ./FooExDriver/include/
+#    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${FOO_LIBNAME}"
+#    FILES_MATCHING PATTERN "*.h"
+#    PATTERN "doc" EXCLUDE
+#    # TODO: Exclude 'doc/' subdir that is a part of the source directory 'deepCmakeLibrary/'
+#)
+#
+#install(
+#    FILES "${CMAKE_CURRENT_BINARY_DIR}/fooexdriver_export.h"
+#    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+#)
+#
+## Install the Documentation
+##install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/
+##        DESTINATION ${CMAKE_INSTALL_DOCDIR}
+##        FILES_MATCHING
+##        PATTERN "*.md"
+##        PATTERN "*.DS_Store" EXCLUDE
+##        PATTERN "*.svn" EXCLUDE
+##)
+#
+#
+#install(EXPORT FooExDriverPackage
+#    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/FooExDriver
+#    NAMESPACE Sand2Silicon::
+#    FILE FooExDriverConfig.cmake
+#)
 
 
 # -------- Begin Executables ----------
