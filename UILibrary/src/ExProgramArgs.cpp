@@ -6,11 +6,12 @@
  */
 
 #include "../include/ExProgramArgs.h"
-#include <ftxui/component/component.hpp> // for Component
-#include <ftxui/dom/elements.hpp>        // for text
-#include <ftxui/component/screen_interactive.hpp>
-#include <ftxui/screen/screen.hpp>
+//#include <ftxui/component/component.hpp> // for Component
+//#include <ftxui/dom/elements.hpp>        // for text
+//#include <ftxui/component/screen_interactive.hpp>
+//#include <ftxui/screen/screen.hpp>
 
+/** Moved to GUIManager
 ftxui::Component ExProgramArgs::GenerateConfigScreen(ftxui::ScreenInteractive* screen) const {
     std::vector<ftxui::Component> components;
 
@@ -20,7 +21,7 @@ ftxui::Component ExProgramArgs::GenerateConfigScreen(ftxui::ScreenInteractive* s
 
     auto container = ftxui::Container::Vertical({});
     for (const auto& component : components) {
-        container->Add(component)  ;
+        container->Add(component);
     }
 
     auto done_button = ftxui::Button("Done", screen->ExitLoopClosure());
@@ -28,7 +29,9 @@ ftxui::Component ExProgramArgs::GenerateConfigScreen(ftxui::ScreenInteractive* s
 
     return container;
 }
+// */
 
+/** Moved to GUIManager
 template <>
 ftxui::Component TypedArgument<std::string>::GenerateComponent() {
     return ftxui::Input(&(value), defaultValue);
@@ -38,6 +41,7 @@ template <>
 ftxui::Component TypedArgument<bool>::GenerateComponent() {
     return ftxui::Checkbox(description, &(value));
 }
+// */
 
 //template <>
 //ftxui::Component TypedArgument<std::string>::GenerateComponent() const {

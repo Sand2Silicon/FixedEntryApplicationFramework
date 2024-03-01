@@ -13,6 +13,7 @@
 # Define the source files for the UI library
 set(UI_LIBRARY_SOURCES
         UILibrary/src/ExProgramArgs.cpp
+        UILibrary/src/GUIManager.cpp
         # Add other source files related to the UI library here
 )
 
@@ -20,6 +21,7 @@ set(UI_LIBRARY_SOURCES
 set(UI_LIBRARY_HEADERS
         UILibrary/include/ExProgramArgs.h
         UILibrary/include/CLIManager.h
+        UILibrary/include/GUIManager.h
         # Add other header files related to the UI library here
 )
 

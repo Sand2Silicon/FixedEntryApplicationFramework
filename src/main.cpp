@@ -5,13 +5,14 @@
  * Summary Description:
  */
 
-#include "../UILibrary/include/ExProgramArgs.h"
+#include "ExProgramArgs.h"
 #include "ExDriver.h"
 #include "CLIManager.h"
 #include "CLI11.hpp"
-#include <ftxui/component/component.hpp> // for the FTXUI library
-#include <ftxui/dom/elements.hpp>
-#include <ftxui/screen/screen.hpp>
+#include "GUIManager.h"
+//#include <ftxui/component/component.hpp> // for the FTXUI library
+//#include <ftxui/dom/elements.hpp>
+//#include <ftxui/screen/screen.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <memory>
 
@@ -26,20 +27,23 @@ int main(int argc, char** argv) {
     ExProgramArgs args;
 
     // Add universal arguments to args.arguments here:
-    args.arguments.push_back(std::make_shared<TypedArgument<bool>>("interactive", false, "Use interactive config screen."));
+    args.arguments.push_back(std::make_shared<TypedArgument<bool>>
+            ("interactive", false, "Use interactive config screen."));
 
     // Add program specific arguments
     Rubix::setupProgramArgs(args);
 
     try {
-        CLIManager cli_manager(app, args);
-        cli_manager.SetupCLI();
-        cli_manager.ParseCLI(argc, argv);
+        CLIManager cliManager(app, args);
+        cliManager.SetupCLI();
+        cliManager.ParseCLI(argc, argv);
 
         // Check if --interactive flag is passed and display the configuration screen.
         if (app["--interactive"]->as<bool>()) {
             auto screen = ftxui::ScreenInteractive::TerminalOutput();
-            ftxui::Component config_screen = args.GenerateConfigScreen(&screen);
+            GUIManager guiManager(args);
+
+            ftxui::Component config_screen = guiManager.GenerateConfigScreen(&screen);            //args.GenerateConfigScreen(&screen);
             screen.Loop(config_screen);
         }
 

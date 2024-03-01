@@ -13,9 +13,9 @@
 #include <stdexcept>    // for std::invlaid_argument
 #include <sstream>      // for std::stringstream
 
-#include <ftxui/component/component.hpp>
-#include <ftxui/dom/elements.hpp>
-#include <ftxui/screen/screen.hpp>
+//#include <ftxui/component/component.hpp>
+//#include <ftxui/dom/elements.hpp>
+//#include <ftxui/screen/screen.hpp>
 #include "uilibrary_export.h"
 
 #include <variant>
@@ -31,7 +31,6 @@ struct ArgumentBase {
     std::string description;
     virtual ~ArgumentBase() = default;
     virtual void AddToCLI(CLI::App& app) = 0;
-    virtual ftxui::Component GenerateComponent() = 0;
 
     virtual ArgumentVariant GetValue() const = 0;
 };
@@ -50,8 +49,6 @@ struct TypedArgument : ArgumentBase {
     void AddToCLI(CLI::App& app) override {
         app.add_option("--" + name, value, description)->default_val(defaultValue);
     }
-
-    ftxui::Component GenerateComponent() override;
 
     [[nodiscard]] ArgumentVariant GetValue() const override {
         return value;
@@ -82,17 +79,7 @@ struct ExProgramArgs {
             arg->AddToCLI(app);
         }
     }
-
-    ftxui::Component UILIBRARY_EXPORT GenerateConfigScreen(ftxui::ScreenInteractive* screen) const;
 };
-
-// Declare the explicit specializations
-template <>
-ftxui::Component UILIBRARY_EXPORT TypedArgument<std::string>::GenerateComponent();
-
-template <>
-ftxui::Component UILIBRARY_EXPORT TypedArgument<bool>::GenerateComponent();
-
 
 
 #endif //DYNAMICLIBRARYCLIENT_EXPROGRAMARGS_H
