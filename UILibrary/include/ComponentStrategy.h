@@ -11,32 +11,41 @@
 #include "uilibrary_export.h"
 #include <ftxui/component/component.hpp>
 
+/**
+ * @brief Base class - strategies for generating FTXUI components for the configuration screen.
+ */
 class ComponentStrategy {
 public:
-    virtual UILIBRARY_EXPORT ~ComponentStrategy() = default;
     virtual ftxui::Component UILIBRARY_EXPORT GenerateComponent() const = 0;
+    virtual UILIBRARY_EXPORT ~ComponentStrategy() = default;
 };
 
-// BOOL - strategy
+
+/**
+ * @brief BOOL - strategy
+ */
 class BoolComponentStrategy : public ComponentStrategy {
-    // Reference or pointer to the argument's value
-    bool& value;
-
 public:
-    UILIBRARY_EXPORT BoolComponentStrategy(bool& value);
+    UILIBRARY_EXPORT BoolComponentStrategy(bool &value);
 
     ftxui::Component UILIBRARY_EXPORT GenerateComponent() const override;
+
+private:
+    bool &value;            // Reference or pointer to the argument's value
 };
 
-// STRING - strategy
-class StringComponentStrategy : public ComponentStrategy {
-    // Reference or pointer to the argument's value
-    std::string& value;
 
+/**
+ * @brief STRING - strategy
+ */
+class StringComponentStrategy : public ComponentStrategy {
 public:
-    UILIBRARY_EXPORT StringComponentStrategy(std::string& value);
+    UILIBRARY_EXPORT StringComponentStrategy(std::string &value);
 
     ftxui::Component UILIBRARY_EXPORT GenerateComponent() const override;
+
+private:
+    std::string &value;     // Reference or pointer to the argument's value
 };
 
 #endif //DYNAMICLIBRARYCLIENT_COMPONENTSTRATEGY_H
