@@ -12,11 +12,13 @@
 #include <string>
 #include <stdexcept>    // for std::invlaid_argument
 #include <sstream>      // for std::stringstream
+#include <unordered_map>
 
 //#include <ftxui/component/component.hpp>
 //#include <ftxui/dom/elements.hpp>
 //#include <ftxui/screen/screen.hpp>
 #include "uilibrary_export.h"
+#include "ComponentStrategy.h"
 
 #include <variant>
 
@@ -76,15 +78,25 @@ struct TypedArgument : ArgumentBase {
 };
 
 using ArgumentList = std::vector<std::unique_ptr<ArgumentBase>>;
+using StrategyList = std::unordered_map<std::string, std::shared_ptr<ComponentStrategy>>;
 
 struct ExProgramArgs {
     ArgumentList arguments;
+    StrategyList componentStrategies;
 
-//    void setupCLI(CLI::App& app) {
-//        for (auto& arg : arguments) {
-//            arg->AddToCLI(app);
-//        }
-//    }
+    // Method to add strategies for arguments
+    void AddStrategy(const std::string& argumentName, std::shared_ptr<ComponentStrategy> strategy)
+    {
+        componentStrategies[argumentName] = strategy;
+    };
+
+    /*
+    void setupCLI(CLI::App& app) {
+        for (auto& arg : arguments) {
+            arg->AddToCLI(app);
+        }
+    }
+    // */
 };
 
 

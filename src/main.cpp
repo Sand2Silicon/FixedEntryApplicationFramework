@@ -10,11 +10,14 @@
 #include "CLIManager.h"
 #include "CLI11.hpp"
 #include "GUIManager.h"
+#include "ComponentStrategy.h"
+
 //#include <ftxui/component/component.hpp> // for the FTXUI library
 //#include <ftxui/dom/elements.hpp>
 //#include <ftxui/screen/screen.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <memory>
+#include <variant>
 
 using namespace ftxui;
 
@@ -27,9 +30,37 @@ int main(int argc, char** argv) {
     ExProgramArgs args;
 
     // Add universal arguments to args.arguments here:
+    /*
     args.arguments.emplace_back(std::make_unique<TypedArgument<bool>>
             ("interactive", false, "Use interactive config screen.")
             )->setRequired();
+    // */
+
+    auto interactiveArg = std::make_unique<TypedArgument<bool>>
+            ("interactive", false, "Use interactive config screen.");
+
+    args.AddStrategy(interactiveArg->name, std::make_shared<BoolComponentStrategy>(interactiveArg->value));
+    args.arguments.push_back(std::move(interactiveArg));
+
+
+
+
+    //args.AddStrategy("useGPU", std::make_shared<BoolComponentStrategy>(boolArg->value));
+
+    /* THis is the working BOOL example */
+//    auto boolArg = std::make_unique<TypedArgument<bool>>("useGPU", false, "Use GPU for processing if available");
+//    args.AddStrategy(boolArg->name, std::make_shared<BoolComponentStrategy>(boolArg->value));
+
+//    args.arguments.emplace_back(std::make_unique<TypedArgument<bool>>
+//            ("useGPU", false, "Use GPU for processing if available" /*, false*/));
+//
+//    args.AddStrategy("useGPU",
+//                     std::make_shared<BoolComponentStrategy>( std::get_if<bool>(args.arguments.back()->GetValue())) )
+//    );
+
+
+//    auto stringArg = std::make_shared<TypedArgument<std::string>>("files", "", "File paths to process", true);
+
 
     // Add program specific arguments
     Rubix::setupProgramArgs(args);

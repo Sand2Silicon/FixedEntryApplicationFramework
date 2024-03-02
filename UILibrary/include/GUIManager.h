@@ -8,7 +8,7 @@
  *          of any other concerns.
  * Summary Description:
  */
-
+#include "uilibrary_export.h"
 #include "ExProgramArgs.h"
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/screen_interactive.hpp>

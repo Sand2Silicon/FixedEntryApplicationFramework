@@ -14,22 +14,9 @@
 ftxui::Component GUIManager::GenerateConfigScreen(ftxui::ScreenInteractive* screen) const {
     std::vector<ftxui::Component> components;
 
-    // Original from ExProgramArgs
-//    for (const auto& arg : args_.arguments) {
-//        components.push_back(arg->GenerateComponent()) ;
-//    }
-
-    // "New" for GUIManager (we can do better!)
-    for (const auto& arg_base : args_.arguments) {
-        // Dynamically cast to known types and generate components.
-        if (auto arg = dynamic_cast<const TypedArgument<bool>*>(arg_base.get())) {
-            components.push_back(GenerateComponent(*arg));
-        } else if (auto arg = dynamic_cast<const TypedArgument<std::string>*>(arg_base.get())) {
-            components.push_back(GenerateComponent(*arg));
-        }
-        // Handle other types similarly...
+    for (const auto& [name, strategy] : args_.componentStrategies) {
+        components.push_back(strategy->GenerateComponent());
     }
-
 
     auto container = ftxui::Container::Vertical({});
     for (const auto& component : components) {
