@@ -13,10 +13,9 @@ struct ExProgramArgs;   // forward declaration
 namespace Rubix {
 
     void BAREXDRIVER_EXPORT setupProgramArgs(ExProgramArgs& args);
-    void BAREXDRIVER_EXPORT helloRubix();
+    void BAREXDRIVER_EXPORT helloRubix(const ExProgramArgs& args);
     
     class ExDriver {
-
     };
 
 } // Rubix

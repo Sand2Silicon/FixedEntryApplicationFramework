@@ -16,7 +16,10 @@ public:
     CLIManager(CLI::App& app, ExProgramArgs& args) : app_(app), args_(args) {}
 
     void SetupCLI() {
-        args_.setupCLI(app_);
+        for (auto& arg : args_.arguments) {
+            arg->AddToCLI(app_);
+        }
+    //     args_.setupCLI(app_);
     }
 
     int ParseCLI(int argc, char** argv) {

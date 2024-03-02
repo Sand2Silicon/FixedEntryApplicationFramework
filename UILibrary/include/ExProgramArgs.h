@@ -33,6 +33,12 @@ struct ArgumentBase {
     virtual void AddToCLI(CLI::App& app) = 0;
 
     virtual ArgumentVariant GetValue() const = 0;
+
+    // TODO: Add setRequired() setMutuallyExclusive()
+    ArgumentBase& setRequired() {
+        std::cout << "option required\n";
+        return *this;
+    }
 };
 
 template <typename T>
@@ -69,16 +75,16 @@ struct TypedArgument : ArgumentBase {
 
 };
 
-using ArgumentList = std::vector<std::shared_ptr<ArgumentBase>>;
+using ArgumentList = std::vector<std::unique_ptr<ArgumentBase>>;
 
 struct ExProgramArgs {
     ArgumentList arguments;
 
-    void setupCLI(CLI::App& app) {
-        for (auto& arg : arguments) {
-            arg->AddToCLI(app);
-        }
-    }
+//    void setupCLI(CLI::App& app) {
+//        for (auto& arg : arguments) {
+//            arg->AddToCLI(app);
+//        }
+//    }
 };
 
 

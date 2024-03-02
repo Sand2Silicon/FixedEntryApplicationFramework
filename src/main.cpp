@@ -27,8 +27,9 @@ int main(int argc, char** argv) {
     ExProgramArgs args;
 
     // Add universal arguments to args.arguments here:
-    args.arguments.push_back(std::make_shared<TypedArgument<bool>>
-            ("interactive", false, "Use interactive config screen."));
+    args.arguments.emplace_back(std::make_unique<TypedArgument<bool>>
+            ("interactive", false, "Use interactive config screen.")
+            )->setRequired();
 
     // Add program specific arguments
     Rubix::setupProgramArgs(args);
@@ -50,7 +51,7 @@ int main(int argc, char** argv) {
         // Do the program's real work!
         // Call library function with error handling.
         try {
-            Rubix::helloRubix();
+            Rubix::helloRubix(args);
         } catch (const std::exception& e)
         {
             std::cerr << "Error calling hellRubix(): " << e.what() <<std::endl;
