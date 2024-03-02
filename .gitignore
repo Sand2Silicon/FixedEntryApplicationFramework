@@ -4,6 +4,7 @@ _build/
 .idea/
 out/
 _vs_out/
+doxygen/
 
 .vs/
 
