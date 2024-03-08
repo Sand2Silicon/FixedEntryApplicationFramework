@@ -78,17 +78,46 @@ struct TypedArgument : ArgumentBase {
 };
 
 using ArgumentList = std::vector<std::unique_ptr<ArgumentBase>>;
-using StrategyList = std::unordered_map<std::string, std::shared_ptr<ComponentStrategy>>;
+using StrategyList = std::map<std::string, std::shared_ptr<ComponentStrategy>>;
 
 struct ExProgramArgs {
     ArgumentList arguments;
     StrategyList componentStrategies;
 
+    template<typename T>
+    void addArgument(std::string name, T defaultValue, std::string description = "", bool required = false) {
+        
+        auto argument = std::make_unique<TypedArgument<T>> (name, defaultValue, description);       
+        addStrategy(argument->name, argument->value, description, required);
+        arguments.push_back(std::move(argument));
+    }
+
+    /** // My Version 
+    void addStrategy(std::string name, ArgumentVariant &value, std::string description, bool required) {
+        if (holds_alternative<bool>(value)) {
+            addStrategy(name, std::make_shared<BoolComponentStrategy>(name, get<bool>(value), description, false));
+        } else if (holds_alternative<std::string>(value)) {
+            addStrategy(name, std::make_shared<StringComponentStrategy>(name, get<std::string>(value), description, false));
+        }
+    }   // */
+
+    template<typename T>    
+    void addStrategy(std::string name, T& value, std::string description, bool required) {
+        if constexpr (std::is_same_v<T, bool>) {
+            addStrategy(name, std::make_shared<BoolComponentStrategy>(name, value, description, false));
+        }
+        else if constexpr (std::is_same_v<T, std::string>) {
+            addStrategy(name, std::make_shared<StringComponentStrategy>(name, value, description, false));
+        }
+    }
+
     // Method to add strategies for arguments
-    void AddStrategy(const std::string& argumentName, std::shared_ptr<ComponentStrategy> strategy)
-    {
+    void addStrategy(const std::string &argumentName, std::shared_ptr<ComponentStrategy> strategy) {
         componentStrategies[argumentName] = strategy;
-    };
+    }
+};
+
+
 
     /*
     void setupCLI(CLI::App& app) {
@@ -97,7 +126,7 @@ struct ExProgramArgs {
         }
     }
     // */
-};
+//};
 
 
 #endif //DYNAMICLIBRARYCLIENT_EXPROGRAMARGS_H

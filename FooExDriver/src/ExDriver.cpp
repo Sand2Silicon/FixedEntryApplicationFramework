@@ -14,8 +14,9 @@ namespace Rubix {
 
     void setupProgramArgs(ExProgramArgs &args) {
         // Add arguments to args.arguments here, for example:
-        args.arguments.push_back(std::make_unique<TypedArgument<std::string>>("files", "", "File paths to process"));
-        args.arguments.push_back(std::make_unique<TypedArgument<bool>>("useGPU", false, "Use GPU for processing if available"));
+   
+        args.addArgument("files", std::string{}, "File paths to process.", false);
+        args.addArgument("useGPU", false, "Use GPU for processing if available", false);
     }
 
     void helloRubix(const ExProgramArgs& args) {

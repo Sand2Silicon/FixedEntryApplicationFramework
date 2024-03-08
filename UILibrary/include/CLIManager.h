@@ -22,7 +22,7 @@ public:
     //     args_.setupCLI(app_);
     }
 
-    int ParseCLI(int argc, char** argv) {
+    inline int ParseCLI(int argc, char** argv) {
         CLI11_PARSE(app_, argc, argv);
         return 0;
     }

@@ -13,9 +13,15 @@ namespace Rubix {
     using namespace std;
 
     void setupProgramArgs(ExProgramArgs &args) {
-        // Add arguments to args.arguments here, for example:
-        args.arguments.emplace_back(std::make_unique<TypedArgument<std::string>>("models", "", "Model path to load"));
-        args.arguments.emplace_back(std::make_unique<TypedArgument<bool>>("useGPU", false, "Use GPU for processing if available"));
+        // Add arguments to args.arguments here, for example:     
+        auto modelsArg = std::make_unique<TypedArgument<std::string>>("models", "DefaultValue", "Model path to load");
+        args.addStrategy(modelsArg->name, std::make_shared<StringComponentStrategy>(modelsArg->name, modelsArg->value, "", false));
+        args.arguments.push_back(std::move(modelsArg));
+        
+        auto gpuArg = std::make_unique<TypedArgument<bool>> ("useGPU", false, "Use GPU for processing if available");
+        args.addStrategy(gpuArg->name, std::make_shared<BoolComponentStrategy>(gpuArg->name, gpuArg->value, "", false));
+        args.arguments.push_back(std::move(gpuArg));
+
     }
 
     void helloRubix(const ExProgramArgs& args) {

@@ -16,8 +16,16 @@
  */
 class ComponentStrategy {
 public:
-    virtual ftxui::Component UILIBRARY_EXPORT GenerateComponent() const = 0;
+    ComponentStrategy(const std::string& name, const std::string& description, bool required) :
+            name{std::move(name)}, description{std::move(description)}, required {required} {};
     virtual UILIBRARY_EXPORT ~ComponentStrategy() = default;
+
+    virtual ftxui::Component UILIBRARY_EXPORT GenerateComponent() const = 0;
+
+protected:
+    std::string name;
+    std::string description;
+    bool required;
 };
 
 
@@ -26,12 +34,12 @@ public:
  */
 class BoolComponentStrategy : public ComponentStrategy {
 public:
-    UILIBRARY_EXPORT BoolComponentStrategy(bool &value);
+    UILIBRARY_EXPORT BoolComponentStrategy(std::string name, bool& value, std::string description="", bool required=false);
 
     ftxui::Component UILIBRARY_EXPORT GenerateComponent() const override;
 
 private:
-    bool &value;            // Reference or pointer to the argument's value
+    bool& value;            // Reference or pointer to the argument's value
 };
 
 
@@ -40,12 +48,12 @@ private:
  */
 class StringComponentStrategy : public ComponentStrategy {
 public:
-    UILIBRARY_EXPORT StringComponentStrategy(std::string &value);
+    UILIBRARY_EXPORT StringComponentStrategy(std::string name, std::string& value, std::string description="", bool required=false);
 
     ftxui::Component UILIBRARY_EXPORT GenerateComponent() const override;
 
 private:
-    std::string &value;     // Reference or pointer to the argument's value
+    std::string& value;     // Reference or pointer to the argument's value
 };
 
 #endif //DYNAMICLIBRARYCLIENT_COMPONENTSTRATEGY_H

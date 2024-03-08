@@ -9,16 +9,19 @@
 #include "ComponentStrategy.h"
 
 // BOOL - strategy
-BoolComponentStrategy::BoolComponentStrategy(bool& value) : value(value) {}
+BoolComponentStrategy::BoolComponentStrategy(std::string name, bool& value, std::string description, bool required) :
+ComponentStrategy(std::move(name), std::move(description), required), value{value} {}
 
 ftxui::Component BoolComponentStrategy::GenerateComponent() const {
-    return ftxui::Checkbox("", &value);
+    return ftxui::Checkbox(name, &value);
 }
 
 
 // STRING - strategy
-StringComponentStrategy::StringComponentStrategy(std::string& value) : value(value) {}
+StringComponentStrategy::StringComponentStrategy(std::string name, std::string& value, std::string description, bool required)
+        : ComponentStrategy(std::move(name), std::move(description), required), value{value} {}
 
 ftxui::Component StringComponentStrategy::GenerateComponent() const {
-    return ftxui::Input("", &value);
+    return ftxui::Input(&value, name);
+
 }
